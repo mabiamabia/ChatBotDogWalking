@@ -1,0 +1,1028 @@
+{
+  "description": "DogWalkingRecurringFlow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "choose_language_dwl_alex",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "choose_language_dwl_alex",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_language",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 100,
+          "y": 150
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Hello 👋 Olá 👋\nMy name is Alex, your virtual assistant at Dog Walking Lisbon 🐾\n\nPlease select your language / Por favor selecione o seu idioma:\n\n1️⃣ English\n2️⃣ Português",
+        "timeout": "600"
+      }
+    },
+    {
+      "name": "split_language",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "welcome_dwl_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "English",
+              "arguments": [
+                "{{widgets.choose_language_dwl_alex.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "welcome_dwl_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Português",
+              "arguments": [
+                "{{widgets.choose_language_dwl_alex.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.choose_language_dwl_alex.inbound.Body}}",
+        "offset": {
+          "x": 100,
+          "y": 300
+        }
+      }
+    },
+    {
+      "name": "welcome_dwl_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_new_existing_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -200,
+          "y": 450
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Welcome! 🐶🐾\nWe're so happy you're here. Let's make sure your furry friend gets the best care in Lisbon.\n\nPlease choose one of the options below:\n1️⃣ I am a new client\n2️⃣ I am an existing client",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "welcome_dwl_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_new_existing_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 200,
+          "y": 450
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Bem-vindo(a)! 🐶🐾\nEstamos muito felizes por tê-lo(a) aqui. Vamos garantir que o seu amigo de quatro patas receba o melhor cuidado em Lisboa.\n\nPor favor, escolha uma das opções abaixo:\n1️⃣ Sou um(a) novo(a) cliente\n2️⃣ Já sou cliente",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "split_new_existing_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "service_choice_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "New Client",
+              "arguments": ["{{widgets.welcome_dwl_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "existing_client_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Existing Client",
+              "arguments": ["{{widgets.welcome_dwl_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.welcome_dwl_en.inbound.Body}}",
+        "offset": {
+          "x": -200,
+          "y": 600
+        }
+      }
+    },
+    {
+      "name": "split_new_existing_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "service_choice_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Novo Cliente",
+              "arguments": ["{{widgets.welcome_dwl_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "existing_client_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Cliente Existente",
+              "arguments": ["{{widgets.welcome_dwl_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.welcome_dwl_pt.inbound.Body}}",
+        "offset": {
+          "x": 200,
+          "y": 600
+        }
+      }
+    },
+    {
+      "name": "service_choice_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_service_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -400,
+          "y": 750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Great! 🐾 How can I help you today?\nWhich service are you interested in?\n\n1️⃣ 🐕 Dog Walking\n2️⃣ 🏡 Pet Sitting\n3️⃣ 🛏️ Pet Boarding\n4️⃣ 🚕 Pet Taxi\n5️⃣ 💍 Wedding Service",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "service_choice_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_service_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 400,
+          "y": 750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Ótimo! 🐾 Como posso ajudar hoje?\nQual serviço tem interesse em agendar?\n\n1️⃣ 🐕 Dog Walking\n2️⃣ 🏡 Pet Sitting\n3️⃣ 🛏️ Pet Boarding\n4️⃣ 🚕 Pet Taxi\n5️⃣ 💍 Wedding Service",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "split_service_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "dog_walking_new_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Dog Walking",
+              "arguments": ["{{widgets.service_choice_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.service_choice_en.inbound.Body}}",
+        "offset": {
+          "x": -400,
+          "y": 900
+        }
+      }
+    },
+    {
+      "name": "split_service_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "dog_walking_new_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Dog Walking",
+              "arguments": ["{{widgets.service_choice_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.service_choice_pt.inbound.Body}}",
+        "offset": {
+          "x": 400,
+          "y": 900
+        }
+      }
+    },
+    {
+      "name": "dog_walking_new_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_recurring_once_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -600,
+          "y": 1050
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Ok, great! Let's go for it 🐾\nFor Dog Walking, will this be a recurring service or just a one-time booking?\n\n1️⃣ Recurring service\n2️⃣ One-time booking",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "dog_walking_new_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_recurring_once_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 600,
+          "y": 1050
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Perfeito! Vamos a isso 🐾\nNo caso de Dog Walking, pretende um serviço regular ou apenas um serviço pontual?\n\n1️⃣ Serviço regular\n2️⃣ Serviço pontual",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "split_recurring_once_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "start_date_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Recurring",
+              "arguments": ["{{widgets.dog_walking_new_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.dog_walking_new_en.inbound.Body}}",
+        "offset": {
+          "x": -600,
+          "y": 1200
+        }
+      }
+    },
+    {
+      "name": "split_recurring_once_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "start_date_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Regular",
+              "arguments": ["{{widgets.dog_walking_new_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.dog_walking_new_pt.inbound.Body}}",
+        "offset": {
+          "x": 600,
+          "y": 1200
+        }
+      }
+    },
+    {
+      "name": "start_date_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "weekdays_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -800,
+          "y": 1350
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Awesome! 🐶 Let's make this a regular thing.\nWhen would you like to start? Please send the start date in DD/MM/YYYY format.\n\n(If invalid date: \"For accuracy, please use DD/MM/YYYY format (e.g., 22/08/2025).\")",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "start_date_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "weekdays_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 800,
+          "y": 1350
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Excelente! 🐶 Vamos tornar isto um hábito regular.\nQuando gostaria de começar?\nPor favor, envie a data de início no formato DD/MM/AAAA.\n\n(Se inválido: \"Por favor, utilize o formato DD/MM/AAAA (ex.: 22/08/2025).\")",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "weekdays_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "walks_per_day_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1000,
+          "y": 1500
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Perfect! 🐾 Which weekdays should we walk your dog?\nTap all that apply.\n\nMonday\nTuesday\nWednesday\nThursday\nFriday",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "weekdays_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "walks_per_day_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1000,
+          "y": 1500
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Perfeito! 🐾 Em que dias da semana devemos passear o seu cão?\nToque em todas as opções que se aplicam.\n\nSegunda-feira\nTerça-feira\nQuarta-feira\nQuinta-feira\nSexta-feira",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "walks_per_day_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "walk_times_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1200,
+          "y": 1650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "How many walks per day will you need on those days? 🐾\nChoose below:\n\n1️⃣ 1 walk per day\n2️⃣ 2 walks per day\n3️⃣ 3 walks per day",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "walks_per_day_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "walk_times_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1200,
+          "y": 1650
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Quantos passeios por dia vai precisar nesses dias? 🐾\nEscolha abaixo:\n\n1️⃣ 1 passeio por dia\n2️⃣ 2 passeios por dia\n3️⃣ 3 passeios por dia",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "walk_times_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "registration_form_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1400,
+          "y": 1800
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Great! Now let's set up the walk times ⏰\n\nFor 1 walk → Please tell me your preferred start time (24h format, e.g., 09:30).\n\nFor 2 walks → Please tell me the time for the first walk, and then the second walk.\n\nFor 3 walks → Please tell me the time for the first, second, and third walk.\n\n(If invalid time: \"Please send the time in 24h format, e.g., 09:30, 15:00, 18:00.\")",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "walk_times_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "registration_form_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1400,
+          "y": 1800
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Ótimo! Agora vamos definir os horários dos passeios ⏰\n\nSe for 1 passeio → indique o horário preferido (formato 24h, ex.: 09:30).\n\nSe forem 2 passeios → indique o horário do primeiro passeio e depois do segundo.\n\nSe forem 3 passeios → indique o horário do primeiro, segundo e terceiro passeio.\n\n(Se inválido: \"Por favor, utilize o formato 24h, ex.: 09:30, 15:00, 18:00.\")",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "registration_form_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "follow_up_form_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1600,
+          "y": 1950
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Perfect! 🐕 To complete your booking, we just need a few more details about you and your pet.\nPlease fill out our registration form here:\n\n👉 [Registration Form – Click here]",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "registration_form_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "follow_up_form_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1600,
+          "y": 1950
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Perfeito! 🐕 Para concluir a sua reserva, precisamos de alguns detalhes adicionais sobre si e o seu cão.\nPor favor, preencha o nosso formulário através do link abaixo:\n\n👉 [Formulário de Registro – Clique aqui]",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "follow_up_form_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_done_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -1800,
+          "y": 2100
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Please let me know once you've completed the form so we can move forward with confirming your walks. 🐾\nWhen finished, type DONE here.",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "follow_up_form_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_done_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 1800,
+          "y": 2100
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Avise-me assim que terminar de preencher o formulário para que possamos prosseguir com a confirmação dos passeios 🐾\nQuando terminar, escreva FEITO aqui.",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "split_done_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "form_done_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "DONE",
+              "arguments": ["{{widgets.follow_up_form_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "DONE"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.follow_up_form_en.inbound.Body}}",
+        "offset": {
+          "x": -1800,
+          "y": 2250
+        }
+      }
+    },
+    {
+      "name": "split_done_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "form_done_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "FEITO",
+              "arguments": ["{{widgets.follow_up_form_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "FEITO"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.follow_up_form_pt.inbound.Body}}",
+        "offset": {
+          "x": 1800,
+          "y": 2250
+        }
+      }
+    },
+    {
+      "name": "form_done_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_availability_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -2000,
+          "y": 2400
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Thank you for completing the registration form! ✅\n\nThe next step is to check our team's availability before we proceed with your booking 🐾\n\nPlease choose one of the options below:\n\n1️⃣ Check team's availability\n2️⃣ Talk to a team member",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "form_done_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_availability_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2000,
+          "y": 2400
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Obrigado por preencher o formulário! ✅\n\nO próximo passo é verificar a disponibilidade da nossa equipa antes de prosseguirmos com a sua reserva 🐾\n\nPor favor, escolha uma das opções abaixo:\n\n1️⃣ Verificar disponibilidade da equipa\n2️⃣ Falar com um membro da equipa",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "split_availability_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "availability_check_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Check Availability",
+              "arguments": ["{{widgets.form_done_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "talk_to_team_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Talk to Team",
+              "arguments": ["{{widgets.form_done_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.form_done_en.inbound.Body}}",
+        "offset": {
+          "x": -2000,
+          "y": 2550
+        }
+      }
+    },
+    {
+      "name": "split_availability_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "availability_check_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Verificar Disponibilidade",
+              "arguments": ["{{widgets.form_done_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "next": "talk_to_team_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Falar com Equipa",
+              "arguments": ["{{widgets.form_done_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "2"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.form_done_pt.inbound.Body}}",
+        "offset": {
+          "x": 2000,
+          "y": 2550
+        }
+      }
+    },
+    {
+      "name": "availability_check_en",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_availability_response_en",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -2200,
+          "y": 2700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Great! Please check our team's availability and see if there is a walker available on the days you need:\n👉 https://dogwalkinglisbon.secure.simplybook.it\n\nYou can make a pre-booking directly on this link ✅\n\nIf no slots are available, type NO AVAILABILITY here and we'll connect you with a team member to check alternatives.\n\n(Final prices and payment will be shown directly on the booking page 💳)",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "availability_check_pt",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "split_availability_response_pt",
+          "event": "incomingMessage"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2200,
+          "y": 2700
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Ótimo! Por favor, verifique a disponibilidade da nossa equipa và ver se existe um walker disponível nos dias que precisa:\n👉 https://dogwalkinglisbon.secure.simplybook.it\n\nPode fazer uma pré-reserva diretamente através deste link ✅\n\nSe não houver horários disponíveis, escreva SEM VAGAS aqui e vamos conectá-lo(a) a um membro da equipa para verificar alternativas.\n\n(Os preços finais e o pagamento serão apresentados diretamente na página de reservas 💳)",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "talk_to_team_en",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": -2000,
+          "y": 2850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "No problem! 🐕\nOne of our team members will get in touch with you shortly to assist with your booking.\nPlease wait while we connect you..."
+      }
+    },
+    {
+      "name": "talk_to_team_pt",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": 2000,
+          "y": 2850
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Sem problema! 🐕\nUm dos nossos membros da equipa entrará em contacto consigo em breve para ajudar na sua reserva.\nPor favor, aguarde enquanto o(a) conectamos..."
+      }
+    },
+    {
+      "name": "split_availability_response_en",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "next_steps_en",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "No Availability",
+              "arguments": ["{{widgets.availability_check_en.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "NO AVAILABILITY"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.availability_check_en.inbound.Body}}",
+        "offset": {
+          "x": -2200,
+          "y": 2850
+        }
+      }
+    },
+    {
+      "name": "split_availability_response_pt",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "next_steps_pt",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "Sem Vagas",
+              "arguments": ["{{widgets.availability_check_pt.inbound.Body}}"],
+              "type": "equal_to",
+              "value": "SEM VAGAS"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.availability_check_pt.inbound.Body}}",
+        "offset": {
+          "x": 2200,
+          "y": 2850
+        }
+      }
+    },
+    {
+      "name": "next_steps_en",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": -2400,
+          "y": 3000
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Before your booking is officially confirmed, we always schedule an initial in-person meeting 🐾\n\nThis first visit is mandatory and has a cost of €10 + VAT (total €12,30) to cover travel expenses.\n\nDuring this meeting we will:\n• Get to know your dog personally 🐶\n• Discuss diet, health, and special needs 🍖❤️\n• Review access to your home and keys 🏠🔑\n• Align expectations and routines for the walks 📅\n\n⚠️ Acceptance of our services is subject to:\n• Your area of residence / location 📍\n• Your dog's sociability and health 🐾❤️\n• Our team's availability 👩‍🦰👨‍🦱\n\nOur team will contact you directly to schedule this meeting with the walker assigned to your dog.\n\n👉 Please complete the payment for the first visit here: [Stripe Payment Link]\n\nAfter this meeting, and if all conditions are met, your service can be officially scheduled ✅"
+      }
+    },
+    {
+      "name": "next_steps_pt",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": 2400,
+          "y": 3000
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Antes da sua reserva ser confirmada oficialmente, agendamos sempre uma primeira visita presencial 🐾\n\nEsta visita é obrigatória e tem um custo de 10€ + IVA (total 12,30€) para cobrir despesas de deslocação.\n\nDurante esta visita vamos:\n• Conhecer o seu cão pessoalmente 🐶\n• Falar sobre dieta, saúde e necessidades especiais 🍖❤️\n• Rever o acesso à sua casa e chaves 🏠🔑\n• Alinhar expectativas e rotinas dos passeios 📅\n\n⚠️ Atenção: A aceitação dos nossos serviços está sujeita a:\n• A sua área/localidade de residência 📍\n• O nível de sociabilidade e saúde do cão 🐾❤️\n• A disponibilidade da nossa equipa 👩‍🦰👨‍🦱\n\nA nossa equipa entrará em contacto consigo diretamente para agendar esta reunião com o walker atribuído ao seu cão.\n\n👉 Por favor, conclua o pagamento da primeira visita aqui: [Stripe Payment Link]\n\nApós esta reunião, e se todas as condições forem cumpridas, o serviço poderá ser oficialmente agendado ✅"
+      }
+    },
+    {
+      "name": "existing_client_en",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": -400,
+          "y": 750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Welcome back! Please contact our team directly for assistance with your existing services. 🐾"
+      }
+    },
+    {
+      "name": "existing_client_pt",
+      "type": "send-message",
+      "transitions": [],
+      "properties": {
+        "offset": {
+          "x": 400,
+          "y": 750
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Bem-vindo(a) de volta! Por favor, entre em contacto direto com a nossa equipa para assistência com os seus serviços existentes. 🐾"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
